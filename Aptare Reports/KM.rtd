@@ -1,0 +1,478 @@
+<com.aptare.sc.dal.versioning.ObjectMap>
+  <version>2</version>
+  <className>com.aptare.sc.domain.reportTemplateDesigner.RtdTemplate</className>
+  <data>
+    <entry>
+      <string>longDescription</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>reportVersion</string>
+      <string>1.0</string>
+    </entry>
+    <entry>
+      <string>isCloudTemplate</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>inventoryType</string>
+      <list>
+        <long>0</long>
+      </list>
+    </entry>
+    <entry>
+      <string>reportGuid</string>
+      <string>6fdb9441-1a90-44ba-a673-2e0492f28e3c</string>
+    </entry>
+    <entry>
+      <string>inventoryCategory</string>
+      <long>0</long>
+    </entry>
+    <entry>
+      <string>description</string>
+      <string>KM2</string>
+    </entry>
+    <entry>
+      <string>exportName</string>
+      <string>KM2</string>
+    </entry>
+    <entry>
+      <string>version</string>
+      <double>0.0</double>
+    </entry>
+    <entry>
+      <string>products</string>
+      <list/>
+    </entry>
+    <entry>
+      <string>reportDefinition</string>
+      <com.aptare.sc.dal.versioning.ObjectMap>
+        <version>1</version>
+        <className>com.aptare.sc.domain.report.ReportDefinition</className>
+        <data>
+          <entry>
+            <string>drilldown</string>
+            <boolean>false</boolean>
+          </entry>
+          <entry>
+            <string>designerComponents</string>
+            <list>
+              <com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+                <name>timePeriod</name>
+                <componentScript>
+                  <before/>
+                  <after/>
+                </componentScript>
+                <referenceData/>
+              </com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+              <com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+                <name>scope</name>
+                <componentScript>
+                  <before/>
+                  <after/>
+                </componentScript>
+                <configuration>
+                  <entry>
+                    <string>nodes</string>
+                    <string>SERVERS</string>
+                  </entry>
+                </configuration>
+                <referenceData/>
+              </com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+            </list>
+          </entry>
+          <entry>
+            <string>descriptiveName</string>
+            <string>KM2</string>
+          </entry>
+          <entry>
+            <string>encodedDataSource</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>productsSupported</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>supportsPagenation</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>specalisedReportBuilder</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>advancedComponents</string>
+            <list/>
+          </entry>
+          <entry>
+            <string>systemName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>composedReports</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>postReportInterceptor</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>legendTitle</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>designerScript</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>dataSource</string>
+            <string>---Author: Edward Hall
+---         Karl McHale
+---Date: June, 2022
+---Modified: June 2022
+---Title/Purpose: Backup Totals Report
+---
+WITH 
+NBU1 AS (                                              --- NBU Jobs only 
+SELECT
+n.master_host_name server_name,
+n.server_id,
+n.job_id,
+n.client_id, --validate field name  add this PK
+n.client_host_name client_name,
+n.job_type_name,
+n.nbr_of_files,
+n.vendor_status,
+n.summary_status,
+n.start_date,
+n.finish_date
+FROM apt_v_nbu_job_detail n
+WHERE n.finish_date BETWEEN ${startDate} AND ${endDate} --- This could be set to on week prior instead
+AND n.server_id IN (${hosts})                         --- Variable where master server can be set
+AND n.job_type IN(101, 102, 103, 107, 112, 130, 138)  --- FB, DIFF, Cat, Dup, App, Snap, Auto
+AND n.vendor_status != 150                            --- Jobs not canceled by an administrator
+AND n.IS_ACTIVE = &apos;N&apos;                                 --- Only count completed Jobs
+),
+FNBU as (                                             --- All NBU jobs picked up
+SELECT server_name, server_id, COUNT(job_id) jobs,
+COUNT(DISTINCT client_name) clients,
+SUM(nbr_of_files) nbr_of_files,
+SUM(DECODE(summary_status,&apos;0&apos;,&apos;1&apos;)) successful_jobs,
+SUM(DECODE(summary_status,&apos;1&apos;,&apos;1&apos;)) partial_jobs,
+SUM(DECODE(summary_status,&apos;2&apos;,&apos;1&apos;)) failed_jobs
+FROM NBU1
+GROUP BY server_name, server_id --client_name, job_type_name
+),
+NBU3 AS( --- still missing pct failed
+SELECT
+FB2.SERVER_NAME,  --should this be 
+FB2.JOBS,
+FB2.CLIENTS,
+FB2.NBR_OF_FILES,
+FB2.SUCCESSFUL_JOBS,
+FB2.PARTIAL_JOBS,
+FB2.FAILED_JOBS,
+ROUND(FB2.SUCCESSFUL_JOBS/FB2.JOBS * 100,2)  SUCC_PCT,
+ROUND(FB2.PARTIAL_JOBS/FB2.JOBS * 100,2) PART_PCT,
+ROUND(FB2.FAILED_JOBS/FB2.JOBS * 100, 2) Fail_PCT
+FROM FNBU FB2
+)
+SELECT * FROM NBU3</string>
+          </entry>
+        </data>
+      </com.aptare.sc.dal.versioning.ObjectMap>
+    </entry>
+    <entry>
+      <string>authorUserId</string>
+      <long>103384</long>
+    </entry>
+    <entry>
+      <string>templateName</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>id</string>
+      <long>118132</long>
+    </entry>
+    <entry>
+      <string>reportDecorator</string>
+      <com.aptare.sc.dal.versioning.ObjectMap>
+        <version>2</version>
+        <className>com.aptare.sc.domain.report.Decorator</className>
+        <data>
+          <entry>
+            <string>excludes</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>rightYAxisRangeName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>eventNotFoundComment</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>footer</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>heatMapMinColor</string>
+            <string>#ffffff</string>
+          </entry>
+          <entry>
+            <string>sqlReportData</string>
+            <string>[{&quot;selected&quot;:true,&quot;name&quot;:&quot;server_name&quot;,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;label&quot;:&quot;server_name&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;jobs&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;jobs&quot;,&quot;formatter&quot;:&quot;CustomNumberFormatter&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;sum&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;clients&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;clients&quot;,&quot;formatter&quot;:&quot;CustomNumberFormatter&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;sum&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;nbr_of_files&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;nbr_of_files&quot;,&quot;formatter&quot;:&quot;CustomNumberFormatter&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;sum&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;successful_jobs&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;successful_jobs&quot;,&quot;formatter&quot;:&quot;CustomNumberFormatter&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;sum&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;partial_jobs&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;partial_jobs&quot;,&quot;formatter&quot;:&quot;CustomNumberFormatter&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;sum&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;failed_jobs&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;Failed Jobs&quot;,&quot;formatter&quot;:&quot;CustomNumberFormatter&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;sum&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;succ_pct&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;% Successful&quot;,&quot;formatter&quot;:&quot;DecimalFormatter&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;part_pct&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;% Partially Successful&quot;,&quot;formatter&quot;:&quot;DecimalFormatter&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;selected&quot;:true,&quot;name&quot;:&quot;fail_pct&quot;,&quot;typeName&quot;:&quot;number&quot;,&quot;label&quot;:&quot;% Failures&quot;,&quot;formatter&quot;:&quot;DecimalFormatter&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;additionalDetail&quot;:&quot;&quot;,&quot;typeOverride&quot;:&quot;&quot;}]</string>
+          </entry>
+          <entry>
+            <string>groupBy</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>title</string>
+            <string>KM2</string>
+          </entry>
+          <entry>
+            <string>chartHeight</string>
+            <int>0</int>
+          </entry>
+          <entry>
+            <string>inputUnit</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>groupBySuppressHeaders</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>entityName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>leftYAxisRangeName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>renderType</string>
+            <com.aptare.sc.domain.report.enumerations.RenderType>table</com.aptare.sc.domain.report.enumerations.RenderType>
+          </entry>
+          <entry>
+            <string>reportDataConverter</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>inherits</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>buttonText</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>displayScope</string>
+            <boolean>true</boolean>
+          </entry>
+          <entry>
+            <string>leftTitle</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>groups</string>
+            <list>
+              <com.aptare.sc.domain.report.GroupDecorator>
+                <fields>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>server_name</caption>
+                    <name>server_name</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>jobs</caption>
+                    <name>jobs</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>CustomNumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <aggregation>sum</aggregation>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>clients</caption>
+                    <name>clients</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>CustomNumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <aggregation>sum</aggregation>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>nbr_of_files</caption>
+                    <name>nbr_of_files</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>CustomNumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <aggregation>sum</aggregation>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>successful_jobs</caption>
+                    <name>successful_jobs</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>CustomNumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <aggregation>sum</aggregation>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>partial_jobs</caption>
+                    <name>partial_jobs</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>CustomNumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <aggregation>sum</aggregation>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Failed Jobs</caption>
+                    <name>failed_jobs</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>CustomNumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <aggregation>sum</aggregation>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>% Successful</caption>
+                    <name>succ_pct</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>DecimalFormatter</formatter>
+                    <formatPattern></formatPattern>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>% Partially Successful</caption>
+                    <name>part_pct</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>DecimalFormatter</formatter>
+                    <formatPattern></formatPattern>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>% Failures</caption>
+                    <name>fail_pct</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatter>DecimalFormatter</formatter>
+                    <formatPattern></formatPattern>
+                    <wrap>Y</wrap>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                </fields>
+              </com.aptare.sc.domain.report.GroupDecorator>
+            </list>
+          </entry>
+          <entry>
+            <string>chartWidth</string>
+            <int>0</int>
+          </entry>
+          <entry>
+            <string>cacheDataFields</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>legendAlignment</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>rightTitle</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>buttonScript</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>header</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>legendTitle</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>heatMapMaxColor</string>
+            <string>#b71008</string>
+          </entry>
+        </data>
+      </com.aptare.sc.dal.versioning.ObjectMap>
+    </entry>
+  </data>
+</com.aptare.sc.dal.versioning.ObjectMap>
