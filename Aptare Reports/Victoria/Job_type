@@ -1,0 +1,16 @@
+--Author: ehall@silexdata.com
+--Last Modified: 06/01/2022
+SELECT 
+s.hostname master_server,          -- Master Server apt_v_server
+jd.client_host_name,               -- Client Server Name
+-- Type of Server Client           -- VM or Guest, Host etc
+jd.policy_type_name,               -- Diff, FUll etc
+jd.start_date,                      -- Start Date
+jd.finish_date,                     -- End Date
+jd.summary_status,                  -- need to convert to final job status
+jd.policy_name,                     -- Display no policy if not in policy
+jd.schedule_name                    -- Display no Schedule if not in Schedule
+FROM apt_v_server s, apt_v_nbu_job_detail jd,  apt_v_nbu_policy pc, apt_v_nbu_schedule sc
+WHERE
+jd.server_id = s.server_id
+   --job status inactive
