@@ -14,6 +14,7 @@ jd.policy_name,                     -- Display no policy if not in policy
 jd.schedule_name                    -- Display no Schedule if not in Schedule
 FROM apt_v_server s, apt_v_nbu_job_detail jd,  apt_v_nbu_policy pc, apt_v_nbu_schedule sc
 WHERE jd.finish_date BETWEEN ${startDate} AND ${endDate}
+AND jd.server_id IN (${hosts})                         --- Variable where master server can be set
 AND jd.server_id = s.server_id
 AND jd.IS_ACTIVE = 'N'                                 --- Only count completed Jobs
 --GROUP BY jd.policy_name
