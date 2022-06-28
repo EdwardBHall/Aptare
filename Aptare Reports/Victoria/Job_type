@@ -2,14 +2,13 @@
 --Last Modified: 06/01/2022
 SELECT 
 s.hostname master_server,          -- Master Server apt_v_server
+jd.client_id,                      -- Only included to speed query
 jd.client_host_name,               -- Client Server Name
 -- Type of Server Client           -- VM or Guest, Host etc
-jd.job_type_name,               -- Diff, Full etc
-jd.start_date,                      -- Start Date
-jd.finish_date,                     -- End Date
-jd.summary_status,                  -- need to convert to final job status
---SUM(DECODE(jd.summary_status,0,1,1,1,0)) success,
---SUM(DECODE(jd.summary_status,2,1,0)) failed,
+jd.job_type_name,                  -- Diff, Full etc
+jd.start_date,                     -- Start Date
+jd.finish_date,                    -- End Date
+DECODE(jd.summary_status,0,'Success',1,'Partial',2,'Failed','No Status') Job_Status, -- Convert number to a word status 
 jd.policy_name,                     -- Display no policy if not in policy
 jd.schedule_name                    -- Display no Schedule if not in Schedule
 FROM apt_v_server s, apt_v_nbu_job_detail jd,  apt_v_nbu_policy pc, apt_v_nbu_schedule sc
