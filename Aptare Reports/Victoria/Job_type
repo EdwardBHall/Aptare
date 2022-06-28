@@ -2,18 +2,21 @@
 --Last Modified: 06/01/2022
 SELECT 
 s.hostname master_server,          -- Master Server apt_v_server
---jd.client_id,                      -- Only included to speed query
+jd.client_id,                      -- Only included to speed query UN-SELECTED IN FORMATTING
 jd.client_host_name,               -- Client Server Name
--- Type of Server Client           -- VM or Guest, Host etc
+s.host_type,                       -- Client Server Type VM or Guest, Host etc          -- 
 jd.job_type_name,                  -- Diff, Full etc
 jd.start_date,                     -- Start Date
 jd.finish_date,                    -- End Date
-DECODE(jd.summary_status,0,'Success',1,'Partial',2,'Failed','No Status') Job_Status, -- Convert number to a word status 
+DECODE(jd.summary_status,
+0,'Success',
+1,'Partial',
+2,'Failed',
+'No Status') Job_Status, -- Convert number to a word status 
 NVL(jd.policy_name,'No Policy') Policy,                     -- Display no policy if not in policy
-NVL(jd.schedule_name,'No Schedule') Schedule                  -- Display no Schedule if not in Schedule
+NVL(jd.schedule_name,'No Schedule') Schedule                -- Display no Schedule if not in Schedule
 FROM apt_v_server s, apt_v_nbu_job_detail jd,  apt_v_nbu_policy pc, apt_v_nbu_schedule sc
 WHERE jd.finish_date BETWEEN ${startDate} AND ${endDate}
-AND jd.server_id IN (${hosts})                         --- Variable where master server can be set
-AND jd.server_id = s.server_id
-AND jd.IS_ACTIVE = 'N'                                 --- Only count completed Jobs
---GROUP BY jd.policy_name
+AND jd.server_id IN (${hosts})                         -- Variable where master server can be set
+AND jd.server_id = s.server_id                         -- Key between tables 
+AND jd.IS_ACTIVE = 'N'                                 -- Only count completed Jobs
