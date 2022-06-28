@@ -1,0 +1,522 @@
+<com.aptare.sc.dal.versioning.ObjectMap>
+  <version>2</version>
+  <className>com.aptare.sc.domain.reportTemplateDesigner.RtdTemplate</className>
+  <data>
+    <entry>
+      <string>reportDefinition</string>
+      <com.aptare.sc.dal.versioning.ObjectMap>
+        <version>1</version>
+        <className>com.aptare.sc.domain.report.ReportDefinition</className>
+        <data>
+          <entry>
+            <string>dataSource</string>
+            <string>--Author: rich.rose@aptare.com
+--Last Modified: 07/09/2012
+SELECT 
+s.hostname master_server,
+pc.policy_id,
+pc.policy_name, 
+p.policy_type_name,
+p.is_active,
+p.storage_unit,
+vp.volume_pool_name,
+sc.schedule_id,
+sc.schedule_name schedule_name,
+DECODE(sc.selection_type,1,&#039;Frequency Based&#039;,2,&#039;Calendar Based&#039;) selection_type,
+DECODE(sc.mon_start,null,null,sc.mon_start||&#039; - &#039;||sc.mon_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.tue_start,null,null,sc.tue_start||&#039; - &#039;||sc.tue_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.wed_start,null,null,sc.wed_start||&#039; - &#039;||sc.wed_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.thu_start,null,null,sc.thu_start||&#039; - &#039;||sc.thu_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.fri_start,null,null,sc.fri_start||&#039; - &#039;||sc.fri_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.sat_start,null,null,sc.sat_start||&#039; - &#039;||sc.sat_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.sun_start,null,null,sc.sun_start||&#039; - &#039;||sc.sun_end||&#039;&lt;br/&gt;&#039;) cal_days,
+DECODE(
+sc.frequency,3600,&#039;Every Hour&#039;,
+7200,&#039;Every 2 Hours&#039;,
+64800,&#039;Every 18 Hours&#039;,
+72000,&#039;Every 20 Hours&#039;,
+82800,&#039;Every 23 Hours&#039;,
+86400,&#039;Every Day&#039;,
+345600,&#039;Every 4 Days&#039;,
+604800,&#039;Every 7 Days&#039;,
+21168000,&#039;Every 245 Days&#039;,
+NULL,&#039;Calendar&#039;) frequency,
+DECODE(sc.schedule_type,
+0,&#039;Full Backup&#039;,
+1,&#039;Cumulative Incremantal&#039;,
+2,&#039;Application Backup&#039;,
+4,&#039;Differential Incremental&#039;,
+5,&#039;Archive&#039;) backup_type,
+DECODE(sc.retention_days,
+9999,&#039;Never Expires&#039;,
+-1,&#039;Expires Immediately&#039;,
+sc.retention_days||&#039; Days&#039;) Retain_Data_For,
+REPLACE(aptStringConcat(DISTINCT pc.client_name),&#039;,&#039;,&#039;&lt;br /&gt;&#039;) clients,
+REPLACE(aptStringConcat(DISTINCT pf.pathname),&#039;,&#039;,&#039;&lt;br /&gt;&#039;) paths
+FROM apt_v_nbu_policy_client pc, apt_v_nbu_policy_file pf, apt_v_nbu_policy p, apt_v_server s,
+apt_v_nbu_volume_pool vp, apt_v_nbu_schedule sc
+WHERE 
+pc.client_id IN (${hosts})
+AND p.policy_id = sc.policy_id 
+AND p.policy_id = pc.policy_id
+AND pc.policy_id = pf.policy_id
+AND p.server_id = s.server_id
+AND p.is_active = DECODE(&#039;${freeCombo1}&#039;,&#039;All&#039;,p.is_active,&#039;Active&#039;,&#039;Y&#039;,&#039;Inactive&#039;,&#039;N&#039;)
+AND p.policy_type_name = DECODE(&#039;${freeCombo2}&#039;,&#039;All&#039;,p.policy_type_name,&#039;${freeCombo2}&#039;)
+AND p.volume_pool_id = vp.volume_pool_id (+)
+GROUP BY s.hostname,
+pc.policy_id,
+pc.policy_name,
+p.policy_type_name, 
+p.is_active,
+storage_unit,
+vp.volume_pool_name,
+sc.schedule_id,
+sc.schedule_name,
+DECODE(sc.selection_type,1,&#039;Frequency Based&#039;,2,&#039;Calendar Based&#039;),
+DECODE(sc.mon_start,null,null,sc.mon_start||&#039; - &#039;||sc.mon_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.tue_start,null,null,sc.tue_start||&#039; - &#039;||sc.tue_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.wed_start,null,null,sc.wed_start||&#039; - &#039;||sc.wed_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.thu_start,null,null,sc.thu_start||&#039; - &#039;||sc.thu_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.fri_start,null,null,sc.fri_start||&#039; - &#039;||sc.fri_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.sat_start,null,null,sc.sat_start||&#039; - &#039;||sc.sat_end||&#039;&lt;br/&gt;&#039;)||
+DECODE(sc.sun_start,null,null,sc.sun_start||&#039; - &#039;||sc.sun_end||&#039;&lt;br/&gt;&#039;),
+sc.frequency,
+DECODE(
+sc.frequency,3600,&#039;Every Hour&#039;,
+7200,&#039;Every 2 Hours&#039;,
+64800,&#039;Every 18 Hours&#039;,
+72000,&#039;Every 20 Hours&#039;,
+82800,&#039;Every 23 Hours&#039;,
+86400,&#039;Every Day&#039;,
+345600,&#039;Every 4 Days&#039;,
+604800,&#039;Every 7 Days&#039;,
+21168000,&#039;Every 245 Days&#039;,
+NULL,&#039;Calendar&#039;),
+DECODE(sc.schedule_type,
+0,&#039;Full Backup&#039;,
+1,&#039;Cumulative Incremantal&#039;,
+2,&#039;Application Backup&#039;,
+4,&#039;Differential Incremental&#039;,
+5,&#039;Archive&#039;),
+DECODE(sc.retention_days,
+9999,&#039;Never Expires&#039;,
+-1,&#039;Expires Immediately&#039;,
+sc.retention_days||&#039; Days&#039;)
+ORDER BY 2</string>
+          </entry>
+          <entry>
+            <string>designerScript</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>advancedComponents</string>
+            <list/>
+          </entry>
+          <entry>
+            <string>systemName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>supportsPagenation</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>descriptiveName</string>
+            <string>NBU Policy Schedule Clients Configuration Report</string>
+          </entry>
+          <entry>
+            <string>drilldown</string>
+            <boolean>false</boolean>
+          </entry>
+          <entry>
+            <string>postReportInterceptor</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>specalisedReportBuilder</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>encodedDataSource</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>productsSupported</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>designerComponents</string>
+            <list>
+              <com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+                <name>scope</name>
+                <componentScript>
+                  <before/>
+                  <after/>
+                </componentScript>
+                <configuration>
+                  <entry>
+                    <string>nodes</string>
+                    <string>SERVERS</string>
+                  </entry>
+                </configuration>
+                <referenceData/>
+              </com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+              <com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+                <name>freeCombo</name>
+                <componentScript>
+                  <before/>
+                  <after/>
+                </componentScript>
+                <configuration>
+                  <entry>
+                    <string>freeComboValues1</string>
+                    <string>All,Active,Inactive</string>
+                  </entry>
+                  <entry>
+                    <string>freeComboValues2</string>
+                    <string>All,Standard,MS-Windows,Oracle,NDMP,Vault,FlashBackup,MS-Exchange Server,MS-SQL,MS-Sharepoint,NBU-Catalog</string>
+                  </entry>
+                  <entry>
+                    <string>freeComboHeading1</string>
+                    <string>Policy State:</string>
+                  </entry>
+                  <entry>
+                    <string>freeComboHeading2</string>
+                    <string>Policy Type:</string>
+                  </entry>
+                </configuration>
+                <referenceData/>
+              </com.aptare.sc.domain.reportDesigner.ReportDesignerComponent>
+            </list>
+          </entry>
+          <entry>
+            <string>composedReports</string>
+            <null/>
+          </entry>
+        </data>
+      </com.aptare.sc.dal.versioning.ObjectMap>
+    </entry>
+    <entry>
+      <string>authorUserId</string>
+      <long>100545</long>
+    </entry>
+    <entry>
+      <string>reportDecorator</string>
+      <com.aptare.sc.dal.versioning.ObjectMap>
+        <version>-1</version>
+        <className>com.aptare.sc.domain.report.Decorator</className>
+        <data>
+          <entry>
+            <string>renderType</string>
+            <com.aptare.sc.domain.report.enumerations.RenderType>table</com.aptare.sc.domain.report.enumerations.RenderType>
+          </entry>
+          <entry>
+            <string>groupBySuppressHeaders</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>excludes</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>leftTitle</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>displayScope</string>
+            <boolean>true</boolean>
+          </entry>
+          <entry>
+            <string>chartHeight</string>
+            <int>0</int>
+          </entry>
+          <entry>
+            <string>legendAlignment</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>inherits</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>title</string>
+            <string>NBU Policy Schedule Clients Configuration Report</string>
+          </entry>
+          <entry>
+            <string>legendTitle</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>inputUnit</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>rightYAxisRangeName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>groups</string>
+            <list>
+              <com.aptare.sc.domain.report.GroupDecorator>
+                <fields>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Master Server</caption>
+                    <name>master_server</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <type>hidden</type>
+                    <caption>policy_id</caption>
+                    <name>policy_id</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatPattern>###</formatPattern>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Policy</caption>
+                    <name>policy_name</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown>systemName=backupPolicy&amp;policyId=${row[&#039;policy_id&#039;]}</drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Policy Type</caption>
+                    <name>policy_type_name</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Active?</caption>
+                    <name>is_active</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>center</align>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Storage Unit</caption>
+                    <name>storage_unit</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Volume Pool</caption>
+                    <name>volume_pool_name</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <type>hidden</type>
+                    <caption>schedule_id</caption>
+                    <name>schedule_id</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <formatPattern>###</formatPattern>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Schedule</caption>
+                    <name>schedule_name</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Time Basis</caption>
+                    <name>selection_type</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>left</align>
+                    <formatter>NumberFormatter</formatter>
+                    <formatPattern>###,###,##0</formatPattern>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Backup Window Start -  End</caption>
+                    <name>cal_days</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Frequency</caption>
+                    <name>frequency</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Backup Level</caption>
+                    <name>backup_type</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Retention Period</caption>
+                    <name>retain_data_for</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <align>right</align>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Clients</caption>
+                    <name>clients</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                  <com.aptare.sc.domain.report.FieldDecorator>
+                    <caption>Paths</caption>
+                    <name>paths</name>
+                    <fieldIndex>0</fieldIndex>
+                    <color></color>
+                    <secondaryColor></secondaryColor>
+                    <additionalDetail></additionalDetail>
+                    <drillDown></drillDown>
+                    <rowCount>0</rowCount>
+                    <targets/>
+                  </com.aptare.sc.domain.report.FieldDecorator>
+                </fields>
+              </com.aptare.sc.domain.report.GroupDecorator>
+            </list>
+          </entry>
+          <entry>
+            <string>sqlReportData</string>
+            <string>[{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Master Server&quot;,&quot;name&quot;:&quot;master_server&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;###&quot;,&quot;formatter&quot;:&quot;NumberFormatter&quot;,&quot;label&quot;:&quot;policy_id&quot;,&quot;name&quot;:&quot;policy_id&quot;,&quot;selected&quot;:false,&quot;typeName&quot;:&quot;number&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;systemName=backupPolicy&amp;policyId=${row[&#039;policy_id&#039;]}&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Policy&quot;,&quot;name&quot;:&quot;policy_name&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Policy Type&quot;,&quot;name&quot;:&quot;policy_type_name&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;center&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Active?&quot;,&quot;name&quot;:&quot;is_active&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Storage Unit&quot;,&quot;name&quot;:&quot;storage_unit&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Volume Pool&quot;,&quot;name&quot;:&quot;volume_pool_name&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;###&quot;,&quot;formatter&quot;:&quot;NumberFormatter&quot;,&quot;label&quot;:&quot;schedule_id&quot;,&quot;name&quot;:&quot;schedule_id&quot;,&quot;selected&quot;:false,&quot;typeName&quot;:&quot;number&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Schedule&quot;,&quot;name&quot;:&quot;schedule_name&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;left&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;###,###,##0&quot;,&quot;formatter&quot;:&quot;NumberFormatter&quot;,&quot;label&quot;:&quot;Time Basis&quot;,&quot;name&quot;:&quot;selection_type&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Backup Window Start -  End&quot;,&quot;name&quot;:&quot;cal_days&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Frequency&quot;,&quot;name&quot;:&quot;frequency&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Backup Level&quot;,&quot;name&quot;:&quot;backup_type&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;right&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Retention Period&quot;,&quot;name&quot;:&quot;retain_data_for&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Clients&quot;,&quot;name&quot;:&quot;clients&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;},{&quot;additionalDetail&quot;:&quot;&quot;,&quot;aggregation&quot;:&quot;&quot;,&quot;alignment&quot;:&quot;&quot;,&quot;barType&quot;:&quot;bar&quot;,&quot;colour&quot;:&quot;&quot;,&quot;drilldown&quot;:&quot;&quot;,&quot;formatPattern&quot;:&quot;&quot;,&quot;formatter&quot;:&quot;&quot;,&quot;label&quot;:&quot;Paths&quot;,&quot;name&quot;:&quot;paths&quot;,&quot;selected&quot;:true,&quot;typeName&quot;:&quot;varchar2&quot;,&quot;typeOverride&quot;:&quot;&quot;}]</string>
+          </entry>
+          <entry>
+            <string>eventNotFoundComment</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>chartWidth</string>
+            <int>0</int>
+          </entry>
+          <entry>
+            <string>cacheDataFields</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>rightTitle</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>header</string>
+            <string>Policy State: ${freeCombo1} Policy Type: ${freeCombo2} </string>
+          </entry>
+          <entry>
+            <string>entityName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>footer</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>groupBy</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>reportDataConverter</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>leftYAxisRangeName</string>
+            <null/>
+          </entry>
+          <entry>
+            <string>buttonText</string>
+            <string></string>
+          </entry>
+          <entry>
+            <string>buttonScript</string>
+            <string></string>
+          </entry>
+        </data>
+      </com.aptare.sc.dal.versioning.ObjectMap>
+    </entry>
+    <entry>
+      <string>exportName</string>
+      <string>NBU Policy Schedule Clients Configuration Report</string>
+    </entry>
+    <entry>
+      <string>version</string>
+      <double>0.0</double>
+    </entry>
+    <entry>
+      <string>templateName</string>
+      <null/>
+    </entry>
+  </data>
+</com.aptare.sc.dal.versioning.ObjectMap>
