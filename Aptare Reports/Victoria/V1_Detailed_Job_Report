@@ -6,10 +6,10 @@ jd.client_id,                      -- Only included to speed query UN-SELECTED I
 jd.client_host_name,               -- Client Server Name
 s.host_type,                       -- Client Server Type VM or Guest, Host etc          -- 
 jd.job_type_name,                  -- Diff, Full etc
-jd.start_date,                     -- Start Date
-jd.finish_date,                    -- End Date
-TO_CHAR(jd.start_date, 'MM/DD/YYYY, HH24:MI:SS') AS job_start_date,
-TO_CHAR(jd.finish_date,'MM/DD/YYYY, HH24:MI:SS') AS job_finish_date,
+jd.start_date,                     -- Start Date used only in scope selection not displayed
+jd.finish_date,                    -- End Date used only in scope selection not displayed
+TO_CHAR(jd.start_date, 'MM/DD/YYYY, HH24:MI:SS') AS job_start_date,  -- Displayed Date
+TO_CHAR(jd.finish_date,'MM/DD/YYYY, HH24:MI:SS') AS job_finish_date, -- Displayed Date
 DECODE(jd.summary_status,
 0,'Success',
 1,'Partial',
