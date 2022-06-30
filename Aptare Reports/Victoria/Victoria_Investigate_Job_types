@@ -1,0 +1,16 @@
+--Author: ehall@silexdata.com
+--Last Modified: 06/01/2022
+WITH t1 AS (
+SELECT
+COUNT(*),                         -- Included only as primary speed key
+jd.job_type AS type,                       -- Only included to speed query not needed to use host scope
+jd.job_type_name AS name                  -- Diff, Full e                
+FROM apt_v_nbu_job_detail jd
+WHERE jd.finish_date BETWEEN ${startDate} AND ${endDate}
+AND jd.server_id IN (${hosts})
+GROUP BY 
+jd.job_type,
+jd.job_type_name
+)
+SELECT * FROM t1
+ORDER BY 2, 3
