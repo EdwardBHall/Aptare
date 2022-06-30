@@ -1,0 +1,17 @@
+The start and finish dates need only appear in the WHERE clause they do not need to be included in the SELECT statment to be used by the WHERE clause to scope the date.
+
+Look up the views that you want to join, CAREFULY read the Aptare table documentation and use the appropriate forigen key between tables.  There are several foriegn keys, but they only work with one specific table so becarfule to select the correct one.  
+
+Include pimary keys for any views that you will be pulling a lot of data from, it speeds the querys.
+
+You can use a COUNT(*) aggergate function even if you do not need one to have the database pull in and cache all the rows.  You will need to use an group by clause containing all NON aggergate rows that you have called in your SELECT statment.
+
+You can use positional parameters in the order by clause like ORDER BY 1, 2, 4, 3
+
+When defining a table, the aliases from the FROM cluase are only avalible IN THAT table, they are gone after that table is created, so use the name of the 1st table in the second table infront of the rows i.e. T1.my_nbu_view_name
+
+Group By functions need at least one aggergate function in the SQL statment, and the ORDER BY CLAUSE needs ALL non aggergated rows from the SELECT STATMENT
+
+Study Group By functions extensivly
+
+Make sure that you use the formater to name the field names approperatly, and to not have it look bad, the clients get totaly hung up on that and can not see the data.
