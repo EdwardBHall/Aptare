@@ -2,7 +2,7 @@
 --Last Modified: 06/01/2022
 SELECT
 --MAX(COUNT(*)) records,
-s.server_id,
+jd.job_id                          -- Included only as primary speed key
 MAX(jd.job_type) crap,
 jd.job_type,                       -- Only included to speed query not needed to use host scope
 jd.job_type_name,                  -- Diff, Full etc
@@ -11,5 +11,4 @@ jd.finish_date                     -- End Date used only in scope selection not 
 FROM apt_v_server s, apt_v_nbu_job_detail jd
 WHERE jd.finish_date BETWEEN ${startDate} AND ${endDate}
 AND s.server_id IN (${hosts})      -- Variable where master server can be set
-AND s.server_id = jd.server_id
 GROUP BY jd.job_type
