@@ -2,7 +2,6 @@
 --Last Modified: 06/01/2022
 WITH t1 AS (
 SELECT
---COUNT(*) records,
 jd.job_id,                         -- Included only as primary speed key
 jd.job_type AS type,                       -- Only included to speed query not needed to use host scope
 jd.job_type_name AS name,                  -- Diff, Full etc
@@ -21,3 +20,4 @@ FROM t1
 GROUP BY type, name
 )
 SELECT * FROM t2
+ORDER BY type
